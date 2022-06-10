@@ -1,0 +1,2 @@
+INPUT URL:       https://th.bing.com/th/id/R.4fa1c90a301e2cdf4562045047e18cf0?rik=%2f0LYsWI3WmiJqQ&pid=ImgRaw&r=0
+OUTPUT FILE :  C:\Users\Donald\project\cloud-developer\course-02\project\image-filter-starter-code\src\util/tmp/filtered.1820.jpg
