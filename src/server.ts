@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 import { existsSync, unlinkSync } from 'fs';
@@ -9,7 +9,7 @@ import { existsSync, unlinkSync } from 'fs';
   const app = express();
 
   // Set the network port
-  const port = process.env.PORT || 8082;
+  const port:number | string = process.env.PORT || 8082;
   
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
@@ -34,27 +34,27 @@ import { existsSync, unlinkSync } from 'fs';
   
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
-    res.send("try GET /filteredimage?image_url={{}}")
+  app.get( "/", async ( req:Request, res:Response ) => {
+    res.status(202).send("try GET /filteredimage?image_url={{}}")
   } );
   
-  app.get( "/filteredimage", async ( req, res ) => {
-    const inputUrl = req.query.image_url;
+  app.get( "/filteredimage", async ( req:Request, res:Response ) => {
+    const inputUrl:string = req.query.image_url as string;
 
     //validate image url
-    const urlRegex = new RegExp("^https*://.+$");
-    const match  = urlRegex.exec(inputUrl as string);
+    const urlRegex:RegExp = new RegExp("^https*://.+$");
+    const match:string[]  = urlRegex.exec(inputUrl);
     if(!match){
-      res.send("invalid URL param");
+      res.status(404).send("invalid URL param");
     }
     console.log("match",match)
     // res.send(`param ${JSON.stringify(req.query.image_url)}`)
     // res.send("try GET /filteredimage?image_url={{}}")
     try {
-      const filterdImg = await filterImageFromURL(inputUrl as string);
+      const filterdImg:string = await filterImageFromURL(inputUrl);
 
       console.log("TODO: DELETE FILES HERE",filterdImg);
-      res.sendFile(filterdImg,()=>{
+      res.status(200).sendFile(filterdImg,()=>{
         if(existsSync(filterdImg)){
           deleteLocalFiles([filterdImg])
         }
@@ -63,8 +63,9 @@ import { existsSync, unlinkSync } from 'fs';
 
           
 
-    } catch (error) {
-      console.log("error: ",error)
+    } catch (error:any) {
+      console.log("error: ",error);
+      res.status(500).send("request was not processed. Please try again later.")
 
     }
     
